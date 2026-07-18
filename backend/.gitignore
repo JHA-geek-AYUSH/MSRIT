@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+venv/
+env/
+.venv/
+.pytest_cache/
+backend.log
+opal.db
