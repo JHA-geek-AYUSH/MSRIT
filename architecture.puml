@@ -1,0 +1,214 @@
+@startuml GemmaFinOS_Architecture
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam roundcorner 5
+skinparam shadowing false
+skinparam linetype ortho
+skinparam nodesep 18
+skinparam ranksep 28
+skinparam padding 3
+
+skinparam rectangle {
+  BorderColor #555555
+  BackgroundColor #F8F8F8
+  FontStyle bold
+  FontSize 10
+}
+skinparam component {
+  BorderColor #777777
+  BackgroundColor #FFFFFF
+  FontSize 9
+}
+skinparam package {
+  BorderColor #999999
+  BackgroundColor #F4F4F4
+  FontStyle bold
+  FontSize 10
+}
+skinparam database {
+  BackgroundColor #E8F0FB
+  BorderColor #5580BB
+  FontSize 9
+}
+skinparam cloud {
+  BackgroundColor #FFFCE8
+  BorderColor #BBAA55
+  FontSize 9
+}
+skinparam actor {
+  FontSize 9
+}
+skinparam arrow {
+  Color #555555
+  Thickness 1.2
+  FontSize 8
+}
+
+title <b>GemmaFinOS - Financial Compliance & Risk Triage Platform</b>
+
+' ─────────────────────────────────────────────────────
+' Force wide landscape by arranging the 5 columns
+' left-to-right at the top level
+' ─────────────────────────────────────────────────────
+top to bottom direction
+
+' ══════════════ ROW 1: USERS ════════════════
+package "Users" as ROW_USERS #EAF4FB {
+  actor "Finance Analyst\n/ Compliance Officer" as U1
+  actor "Auditor / CFO" as U2
+}
+
+' ══════════════ ROW 2: FRONTEND ═════════════
+package "Frontend  ·  Next.js 14" as ROW_FE {
+  rectangle "Compliance\n/compliance\n/compliance/history\n/compliance/audit" as FE_COMP #D6EAF8
+  rectangle "FinOps\n/invoices  /vendors\n/transactions\n/penalty-sim" as FE_FINOPS #D6EAF8
+  rectangle "Agent & Approvals\n/agent  /approvals\n/dashboard" as FE_AGENT #D6EAF8
+  rectangle "Legal (Track 1)\n/chat  /matters\n/search" as FE_LEGAL #E8E8E8
+}
+
+' ══════════════ ROW 3: API + MIDDLEWARE ═════
+package "API Gateway  ·  FastAPI  /v1" as ROW_API {
+  rectangle "Middleware\nCORS · Prometheus\nClerk JWT  ·  RLS\nRate Limit 1000/day" as MW #FEF9E7
+  rectangle "Compliance API\nPOST /compliance/triage\nPOST /compliance/chat\nGET  /compliance/audit\nPOST /approvals" as API_COMP #FDEBD0
+  rectangle "FinOps API\n/assess  /simulator\n/invoices  /vendors\n/workflows  /connectors" as API_FINOPS #FDEBD0
+  rectangle "Agent API\nPOST /agent\n(persistent chat\n+ DB history)" as API_AGENT #FDEBD0
+  rectangle "Legal API\n/matters  /documents\n/chat  /exports\n/notarization" as API_LEGAL #E8E8E8
+}
+
+' ══════════════ ROW 4: CORE SERVICES (horizontal band) ═════
+package "Core Services  ·  /app/core" as ROW_CORE {
+  rectangle "gemma_client.py\nLLM Gateway\nOllama → AI Studio\n→ OpenRouter" as CORE_LLM #FFFDE7
+  rectangle "security.py\nClerk JWKS\nauto-create user" as CORE_SEC #FEF9E7
+  rectangle "pii_redaction.py\nencryption.py\ndata_retention.py" as CORE_PII #FEF9E7
+  rectangle "Celery Tasks\nmonitoring.py\nrate_limit.py" as CORE_OPS #FEF9E7
+}
+
+' ══════════════ ROW 5: AGENTS (5 columns) ═════
+package "Agent Layer  ·  /app/agents" as ROW_AGENTS {
+  rectangle "TransactionAgent\nAML/CFT\nstructuring\nround-trip\ncounterparty" as A_TXN #E8F5E9
+  rectangle "OnboardingAgent\nKYC / KYB\ndoc gaps\nPEP · sanctions\nUBO check" as A_KYC #E8F5E9
+  rectangle "RegulatoryAgent\nPMLA · FEMA\nRBI · SEBI\nIBC · Companies Act" as A_REG #E8F5E9
+  rectangle "FinancialRiskAgent\nCredit · Market\nLiquidity\nOperational" as A_FIN #E8F5E9
+  rectangle "ReportAgent\nSynthesise all\nfindings →\ncompliance report" as A_RPT #E8F5E9
+  rectangle "FinTriageAgent\n9 tools:\nreassess · penalty_sim\nthreshold_sim · compare\nexplain_risk · rule_info\ngenerate_report\nexternal_action" as A_FTA #FFFDE7
+  rectangle "Aggregator\nMWU weights\nJaccard align\nGemma synth" as A_AGG #FDE8D8
+  rectangle "Legal Agents\nStatute · Precedent\nLimitation · Drafting\nRisk · Devil · Ethics" as A_LEGAL #EEEEEE
+}
+
+' ══════════════ ROW 6: ML PIPELINE ═════
+package "ML Pipeline  ·  /app/ml" as ROW_ML {
+  rectangle "Stage 0\nAnomaly Scorer\nscore_anomalies()\nLLM weights 0–1\n+ cache + fallback" as ML_S0 #FCE4EC
+  rectangle "Stage 1\nXGBoost Risk Tier\nextract_features()\n  Gemma + regex\npredict_risk_tier()\nlow/med/high/crit" as ML_S1 #FCE4EC
+  rectangle "Stage 2 + 3\nCompliance Gap\nscore_compliance_gaps()\n  trigger 35%  tier 20%\n  sector 15%  recency 15%\n  volume 15%\n+ cosine similarity" as ML_S23 #FCE4EC
+  rectangle "rules_db.py\n40 Indian rules\nAML · KYC · GST\nFEMA · IT · CORP" as ML_RDB #F3E5F5
+}
+
+' ══════════════ ROW 7: CONNECTORS + INGESTION ═════
+package "Connectors  &  Ingestion" as ROW_CONN {
+  rectangle "SAP OData\nS/4HANA V2/V4\nPurchaseOrder\nSupplierInvoice" as C_SAP #FFF3E0
+  rectangle "MS Graph\nOutlook · Excel\nSharePoint\nOAuth2" as C_GRAPH #FFF3E0
+  rectangle "Composio v3\n1000+ toolkits\nSlack · Sheets\nWrites → gate" as C_COMP #FFF3E0
+  rectangle "Ingestion Pipeline\nCelery task\nPDF/DOCX/OCR\n→ Qdrant chunks" as INGEST #E3F2FD
+  rectangle "Export & Billing\nPDF · DOCX\nCostCalculator\ncredits · plans" as EXPBILL #E8F5E9
+}
+
+' ══════════════ ROW 8: DATABASE ═════
+package "PostgreSQL  ·  SQLAlchemy async" as ROW_DB {
+  database "Auth\nusers · firms" as DB_AUTH
+  database "Compliance / FinTriage\nassessments · findings\ntriage_runs · chat_msgs\naudit_logs" as DB_COMP
+  database "Approval Gate\napproval_requests\npending→approved" as DB_APPR
+  database "FinOps Workflows\ninvoices · batches\nvendors · policies\nworkflow_runs" as DB_FINOPS
+  database "Legal (Track 1)\nauthorities · chunks\nmatters · runs\nonchain_proofs" as DB_LEGAL
+  database "Billing + Privacy\nbilling_accounts\npii_records\nretention_logs" as DB_PRIV
+}
+
+' ══════════════ ROW 9: EXTERNAL ═════
+package "External Services" as ROW_EXT {
+  cloud "Gemma LLM\nOllama (local)\nGoogle AI Studio\nOpenRouter free" as EXT_LLM #FFFDE7
+  cloud "Auth + Storage\nClerk JWKS\nSupabase docs\nQdrant vectors" as EXT_INFRA
+  cloud "Integrations\nSAP Gateway\nMicrosoft Azure AD\nComposio API\nBlockchain" as EXT_INT #FFF3E0
+}
+
+' ══════════════ CONNECTIONS ═════════════════
+
+' Users → Frontend
+U1 --> FE_COMP
+U1 --> FE_FINOPS
+U2 --> FE_AGENT
+U2 --> FE_LEGAL
+
+' Frontend → API
+FE_COMP --> API_COMP
+FE_FINOPS --> API_FINOPS
+FE_AGENT --> API_AGENT
+FE_LEGAL --> API_LEGAL
+
+' Middleware wraps API
+MW --> API_COMP
+MW --> API_FINOPS
+MW --> API_AGENT
+
+' API → Core
+API_COMP --> CORE_PII : redact
+API_COMP --> CORE_SEC
+API_AGENT --> CORE_LLM
+
+' API → Agents
+API_COMP --> A_TXN
+API_COMP --> A_KYC
+API_COMP --> A_REG
+API_COMP --> A_FIN
+API_COMP --> A_RPT
+API_COMP --> A_FTA : /chat
+API_AGENT --> A_FTA
+
+' API → DB
+API_COMP --> DB_COMP
+API_COMP --> DB_APPR : high-risk queue
+API_FINOPS --> DB_FINOPS
+API_LEGAL --> DB_LEGAL
+API_AGENT --> DB_COMP
+
+' Agents → ML
+A_TXN --> ML_S0
+A_REG --> ML_S23
+A_FIN --> ML_S1
+A_FTA --> ML_S0
+A_FTA --> ML_S1
+A_FTA --> ML_S23
+
+' ML internals
+ML_S1 --> CORE_LLM : Gemma feature extract
+ML_S23 --> ML_RDB
+
+' Agents → LLM (via gemma_client)
+A_TXN --> CORE_LLM
+A_KYC --> CORE_LLM
+A_REG --> CORE_LLM
+A_FIN --> CORE_LLM
+A_RPT --> CORE_LLM
+A_FTA --> CORE_LLM
+A_AGG --> CORE_LLM
+A_LEGAL --> A_AGG
+
+' Connectors
+A_FTA --> C_COMP : external_action
+C_COMP --> DB_APPR : write-gate
+C_SAP --> EXT_INT
+C_GRAPH --> EXT_INT
+C_COMP --> EXT_INT
+
+' Ingestion
+INGEST --> EXT_INFRA : Supabase + Qdrant
+INGEST --> DB_LEGAL
+
+' Billing
+EXPBILL --> DB_PRIV
+
+' Core → External
+CORE_LLM --> EXT_LLM
+CORE_SEC --> EXT_INFRA : Clerk JWKS
+
+@enduml

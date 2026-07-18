@@ -1,0 +1,87 @@
+# GemmaFinOS Backend Configuration
+
+# Database
+DATABASE_URL=postgresql://gemmaFin:gemmaFin123@localhost:5432/gemmaFin_db
+ASYNC_DATABASE_URL=postgresql+asyncpg://gemmaFin:gemmaFin123@localhost:5432/gemmaFin_db
+
+# Vector Database
+QDRANT_URL=http://localhost:6333
+QDRANT_COLLECTION=gemmaFin_chunks
+
+# OpenAI
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_EMBED_MODEL=text-embedding-3-large
+OPENAI_GEN_MODEL=gpt-4o-mini
+OPENAI_VERIFY_MODEL=gpt-4o
+
+# Authentication
+CLERK_SECRET_KEY=your_clerk_secret_key_here
+CLERK_JWKS_URL=https://your-clerk-instance.clerk.accounts.dev/.well-known/jwks.json
+CLERK_ISSUER=https://your-clerk-instance.clerk.accounts.dev
+CLERK_AUDIENCE=your-clerk-audience
+
+# Storage
+SUPABASE_URL=your_supabase_url_here
+SUPABASE_STORAGE_URL=your_supabase_storage_url_here
+SUPABASE_SERVICE_KEY=your_supabase_service_key_here
+
+# Legacy GemmaChain Fuji (Phase 1) — commented out, no longer used
+# GEMMACHAIN_RPC=https://api.gemmachain-test.network/ext/bc/C/rpc
+# NOTARY_CONTRACT_ADDRESS=0x...
+# PUBLISHER_PRIVATE_KEY=0x...
+
+# GemmaFinOS Phase 2 - Private Subnet
+SUBNET_RPC=http://localhost:9650/ext/bc/gemmaFin/rpc
+SUBNET_CHAIN_ID=43210
+SUBNET_NOTARY_ADDR=0x...
+SUBNET_COMMIT_ADDR=0x...
+SUBNET_REGISTRY_ADDR=0x...
+SUBNET_SENDER_PK=0x...
+
+# Subnet Encryption Keys
+# Generate with: openssl rand -base64 32
+SUBNET_MASTER_KEY_B64=your_32_byte_master_key_base64_encoded
+# Generate with: openssl rand -base64 16  
+FHE_SALT_OR_LABEL_SALT_BASE64=your_16_byte_salt_base64_encoded
+
+# Development Settings
+SECRET_KEY=your-secret-key-for-app-encryption
+ENVIRONMENT=development
+DEBUG=true
+
+# Indian Kanoon API — real-time Indian legal document search
+# Register at https://api.indiankanoon.org/ to get a free API token
+# Non-commercial users get ₹10,000/month credit
+INDIAN_KANOON_API_TOKEN=your_indian_kanoon_api_token_here
+
+# Observability (Optional)
+OTEL_EXPORTER_OTLP_ENDPOINT=your_otel_endpoint
+
+# FinTriage AI — Gemma / local LLM (preferred: private, no data leaves the machine)
+# Ollama is auto-detected at http://localhost:11434 if running (no env var needed) —
+# just `ollama run gemma3:1b` (or gemma3:12b/27b) locally and app/core/gemma_client.py
+# picks it up automatically. These are only needed as fallbacks if Ollama isn't running:
+USE_GEMMA=false
+GEMMA_API_KEY=your_google_ai_studio_api_key
+GEMMA_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
+GEMMA_MODEL=gemma-2-27b-it
+
+# FinTriage AI — MCP-style connectors (Plan.md: SAP, Outlook, Excel, SharePoint, local DB)
+# Composio — session-based connector platform (Outlook, OneDrive, Slack, Google Sheets)
+# A single API key covers all toolkits — no per-toolkit auth configs needed.
+# Get your key at https://composio.dev
+COMPOSIO_API_KEY=
+
+# Microsoft Graph (Outlook + Excel + SharePoint all share this one app registration)
+MS_GRAPH_TENANT_ID=your_azure_ad_tenant_id
+MS_GRAPH_CLIENT_ID=your_app_registration_client_id
+MS_GRAPH_CLIENT_SECRET=your_app_registration_client_secret
+MS_GRAPH_MAILBOX_UPN=ap-invoices@yourcompany.com
+
+# SAP (S/4HANA Cloud or on-prem Gateway, OData services)
+SAP_ODATA_BASE_URL=https://your-sap-host/sap/opu/odata/sap
+SAP_USERNAME=your_sap_technical_user
+SAP_PASSWORD=your_sap_technical_user_password
+
+# Optional second local database to scan (kept separate from the platform's own DB above)
+LOCAL_FINANCE_DB_URL=postgresql+asyncpg://user:pass@localhost:5432/customer_finance_db

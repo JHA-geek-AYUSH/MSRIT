@@ -1,0 +1,18 @@
+{
+  "message": "explain the risk in plain English",
+  "session_context": {
+    "last_result": {
+      "risk_tier": "critical",
+      "confidence": 0.7800748348236084,
+      "findings": [
+        {"rule_code": "IT-005", "severity": "critical"},
+        {"rule_code": "AML-002", "severity": "critical"},
+        {"rule_code": "GST-002", "severity": "critical"},
+        {"rule_code": "AML-004", "severity": "critical"}
+      ],
+      "anomaly": {
+        "anomaly_summary": "Medium risk anomaly profile with cross_border_unregistered."
+      }
+    }
+  }
+}

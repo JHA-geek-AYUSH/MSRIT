@@ -1,0 +1,96 @@
+from functools import lru_cache
+from pathlib import Path
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
+
+
+class Settings(BaseSettings):
+    # Postgres / Supabase
+    DATABASE_URL: str = Field("sqlite:///test.db", description="SQLAlchemy URL, e.g. postgresql+psycopg://user:pass@host:6543/postgres")
+    SUPABASE_URL: str | None = None
+    SUPABASE_STORAGE_URL: str | None = None
+    SUPABASE_SERVICE_KEY: str | None = None
+    SUPABASE_REGION: str | None = None
+
+    # Qdrant
+    QDRANT_URL: str = "http://localhost:6333"
+    QDRANT_API_KEY: str | None = None
+    QDRANT_COLLECTION: str = "opal_chunks"
+
+    # Redis / Celery
+    REDIS_URL: str = "redis://localhost:6379/0"
+
+    # OpenAI
+    OPENAI_API_KEY: str | None = None
+    OPENAI_EMBED_MODEL: str = "text-embedding-3-large"
+    OPENAI_GEN_MODEL: str = "gpt-4o-mini"
+    OPENAI_VERIFY_MODEL: str = "gpt-4o"
+
+    # Gemma (via Google AI Studio / Vertex AI) — Track 2
+    GEMMA_API_KEY: str | None = None
+    GEMMA_MODEL: str = "gemma-3-27b-it"          # Google AI Studio model name
+    GEMMA_BASE_URL: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
+    USE_GEMMA: bool = False                         # Set True to route compliance agents through Gemma
+
+    # Composio — session-based connector platform (Outlook, OneDrive, Slack, Google Sheets)
+    # A single API key covers all toolkits — no per-toolkit auth configs needed.
+    COMPOSIO_API_KEY: str | None = None
+
+    # Indian Kanoon API — real-time Indian legal document search
+    # Register: https://api.indiankanoon.org/
+    INDIAN_KANOON_API_TOKEN: str | None = None
+    INDIAN_KANOON_BASE_URL: str = "https://api.indiankanoon.org"
+    
+    # Additional Qdrant settings
+    COLLECTION_NAME: str = "opal_chunks"
+    EMBEDDING_MODEL: str = "all-mpnet-base-v2"
+    TOP_K: int = 24
+    FINAL_K: int = 12
+    BATCH_SIZE: int = 64
+
+    # Clerk
+    CLERK_JWKS_URL: str | None = None
+    CLERK_ISSUER: str | None = None
+    CLERK_AUDIENCE: str | None = None
+
+    # KMS / Encryption
+    APP_KMS_KEY_BASE64: str | None = None
+
+    # Avalanche Fuji (Legacy)
+    AVALANCHE_RPC: str | None = None
+    NOTARY_CONTRACT_ADDRESS: str | None = None
+    PUBLISHER_PRIVATE_KEY: str | None = None
+
+    # Private Avalanche Subnet (Phase 2)
+    ENABLE_BLOCKCHAIN: bool = False
+    SUBNET_RPC: str | None = None
+    SUBNET_CHAIN_ID: int = 43210
+    SUBNET_NOTARY_ADDR: str | None = None
+    SUBNET_COMMIT_ADDR: str | None = None
+    SUBNET_REGISTRY_ADDR: str | None = None
+    SUBNET_SENDER_PK: str | None = None
+    
+    # Subnet Encryption
+    SUBNET_MASTER_KEY_B64: str | None = None
+    FHE_SALT_OR_LABEL_SALT_BASE64: str | None = None
+
+    # Exports
+    EXPORT_TMP_DIR: str = "/tmp/opal"
+    
+    # Storage paths
+    STORAGE_PATH: str = "./storage"
+    RUNS_PATH: str = "./runs"
+
+    # Observability
+    OTEL_EXPORTER_OTLP_ENDPOINT: str | None = None
+
+    # Environment / Deployment
+    ENVIRONMENT: str = "development"
+    CORS_ORIGINS: str = "http://localhost:3000"
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+
+@lru_cache(maxsize=1)
+def get_settings() -> Settings:
+    return Settings()  # type: ignore[call-arg]

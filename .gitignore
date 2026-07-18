@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg*
+*.log
+.dist/
+build/
+dist/
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# Virtual envs
+.venv/
+venv/
+
+# ALL environment / secret files
+.env
+.env.*
+!.env.example
+!env_example
+!env.example
+
+# IDE
+.vscode/
+.idea/
+
+# Node/JS
+node_modules/
+*.tsbuildinfo
+
+# Next.js
+.next/
+out/
+.vercel/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+**/docker-volume/**
+
+# Alembic compiled
+backend/app/db/migrations/versions/*.pyc
+
+# Local data / temp
+/tmp/
+**/*.tmp
+
+# Large / binary files
+*.zip
+*.tar.gz
+*.dmg
+*.pkg
+
+# SQLite databases (local dev only)
+*.db
+
+# Log files
+*.log
+backend/backend.log
+frontend/dev-server*.log
+
+# Sensitive docs
+KEYS.md
+
+# Composio cache
+.composio-cache/
+
+# Supabase exports
+exports/

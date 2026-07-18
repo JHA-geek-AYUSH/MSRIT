@@ -1,0 +1,7 @@
+{
+  "cross_border_unregistered": 0.78,
+  "late_gst_filing": 0.42,
+  "director_pep_match": 0.88,
+  "high_cash_ratio": 0.6,
+  "shell_company_indicator": 0.95
+}
